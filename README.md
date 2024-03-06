@@ -41,3 +41,4 @@ Can we map the discovered vulnerabities in the Trivy output from the Docker buil
 4. Open up [updated_report.sarif](./updated_report.sarif) to see the output.
 
 It can be done, but how reliably? 
+

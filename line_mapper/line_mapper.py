@@ -16,6 +16,7 @@ def find_package_line(package_name, pyproject_content):
     return None
 
 # Load the SARIF report
+
 with open('trivy-results.sarif', 'r') as f:
     sarif_report = json.load(f)
 
