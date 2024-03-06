@@ -35,9 +35,10 @@ You can either create a PR to "main" or run the action manually in the [trivy ac
 
 Can we map the discovered vulnerabities in the Trivy output from the Docker build artifacts and map them back to an original requirements.txt or pyproject.toml file? Here's a quick hack to test this out. The line_mapper.py script is hard-coded to the locations of the `pyproject.toml` and `trivy-reusults.sarif` files at the repo root.
 
-1. `cd line_mapper`
-2. `pip install -r toml`
+1. PWD should be the root of this repository.
+2. `pip install toml`
 3. `python3 line_mapper.py`
-4. Open up [updated_report.sarif](./line_mapper/updated_report.sarif) to see the output.
+4. Open up [updated_report.sarif](./updated_report.sarif) to see the output.
 
-It can be done, but how reliably? We'd need to convert to JS or bash to run it in an Action.
+It can be done, but how reliably? 
+

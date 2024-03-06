@@ -16,11 +16,12 @@ def find_package_line(package_name, pyproject_content):
     return None
 
 # Load the SARIF report
-with open('../trivy-results.sarif', 'r') as f:
+
+with open('trivy-results.sarif', 'r') as f:
     sarif_report = json.load(f)
 
 # Load the pyproject.toml file
-with open('../pyproject.toml', 'r') as f:
+with open('pyproject.toml', 'r') as f:
     pyproject_content = f.read()
 
 # Go through each result in the SARIF report
@@ -42,3 +43,6 @@ for run in sarif_report['runs']:
 # Save the updated SARIF report
 with open('updated_report.sarif', 'w') as f:
     json.dump(sarif_report, f, indent=2)
+
+# Print the updated SARIF report to the console
+print(json.dumps(sarif_report, indent=2))
