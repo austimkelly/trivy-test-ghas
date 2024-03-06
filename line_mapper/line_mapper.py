@@ -43,3 +43,6 @@ for run in sarif_report['runs']:
 # Save the updated SARIF report
 with open('updated_report.sarif', 'w') as f:
     json.dump(sarif_report, f, indent=2)
+
+# Print the updated SARIF report to the console
+print(json.dumps(sarif_report, indent=2))

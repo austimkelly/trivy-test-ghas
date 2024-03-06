@@ -60,4 +60,4 @@ jobs:
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: './line_mapper/updated_report.sarif'
+          sarif_file: 'updated_report.sarif'
