@@ -35,7 +35,7 @@ jobs:
           docker build -t docker.io/austimkelly/trivy-test-ghas:${{ github.sha }} .
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
+        uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'docker.io/austimkelly/trivy-test-ghas:${{ github.sha }}'
           format: 'sarif'
@@ -43,7 +43,6 @@ jobs:
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
           vuln-type: "os,library"
-          limit-severities-for-sarif: true
           
 
       - name: Set up Python
