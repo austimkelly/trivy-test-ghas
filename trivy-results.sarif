@@ -1,0 +1,1167 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "fullName": "Trivy Vulnerability Scanner",
+          "informationUri": "https://github.com/aquasecurity/trivy",
+          "name": "Trivy",
+          "rules": [
+            {
+              "id": "CVE-2024-26597",
+              "name": "OsPackageVulnerability",
+              "shortDescription": {
+                "text": "In the Linux kernel, the following vulnerability has been resolved:  n ..."
+              },
+              "fullDescription": {
+                "text": "In the Linux kernel, the following vulnerability has been resolved:\n\nnet: qualcomm: rmnet: fix global oob in rmnet_policy\n\nThe variable rmnet_link_ops assign a *bigger* maxtype which leads to a\nglobal out-of-bounds read when parsing the netlink attributes. See bug\ntrace below:\n\n==================================================================\nBUG: KASAN: global-out-of-bounds in validate_nla lib/nlattr.c:386 [inline]\nBUG: KASAN: global-out-of-bounds in __nla_validate_parse+0x24af/0x2750 lib/nlattr.c:600\nRead of size 1 at addr ffffffff92c438d0 by task syz-executor.6/84207\n\nCPU: 0 PID: 84207 Comm: syz-executor.6 Tainted: G                 N 6.1.0 #3\nHardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014\nCall Trace:\n \u0026lt;TASK\u0026gt;\n __dump_stack lib/dump_stack.c:88 [inline]\n dump_stack_lvl+0x8b/0xb3 lib/dump_stack.c:106\n print_address_description mm/kasan/report.c:284 [inline]\n print_report+0x172/0x475 mm/kasan/report.c:395\n kasan_report+0xbb/0x1c0 mm/kasan/report.c:495\n validate_nla lib/nlattr.c:386 [inline]\n __nla_validate_parse+0x24af/0x2750 lib/nlattr.c:600\n __nla_parse+0x3e/0x50 lib/nlattr.c:697\n nla_parse_nested_deprecated include/net/netlink.h:1248 [inline]\n __rtnl_newlink+0x50a/0x1880 net/core/rtnetlink.c:3485\n rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3594\n rtnetlink_rcv_msg+0x43c/0xd70 net/core/rtnetlink.c:6091\n netlink_rcv_skb+0x14f/0x410 net/netlink/af_netlink.c:2540\n netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]\n netlink_unicast+0x54e/0x800 net/netlink/af_netlink.c:1345\n netlink_sendmsg+0x930/0xe50 net/netlink/af_netlink.c:1921\n sock_sendmsg_nosec net/socket.c:714 [inline]\n sock_sendmsg+0x154/0x190 net/socket.c:734\n ____sys_sendmsg+0x6df/0x840 net/socket.c:2482\n ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536\n __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565\n do_syscall_x64 arch/x86/entry/common.c:50 [inline]\n do_syscall_64+0x3b/0x90 arch/x86/entry/common.c:80\n entry_SYSCALL_64_after_hwframe+0x63/0xcd\nRIP: 0033:0x7fdcf2072359\nCode: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 \u0026lt;48\u0026gt; 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48\nRSP: 002b:00007fdcf13e3168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e\nRAX: ffffffffffffffda RBX: 00007fdcf219ff80 RCX: 00007fdcf2072359\nRDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003\nRBP: 00007fdcf20bd493 R08: 0000000000000000 R09: 0000000000000000\nR10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000\nR13: 00007fffbb8d7bdf R14: 00007fdcf13e3300 R15: 0000000000022000\n \u0026lt;/TASK\u0026gt;\n\nThe buggy address belongs to the variable:\n rmnet_policy+0x30/0xe0\n\nThe buggy address belongs to the physical page:\npage:0000000065bdeb3c refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x155243\nflags: 0x200000000001000(reserved|node=0|zone=2)\nraw: 0200000000001000 ffffea00055490c8 ffffea00055490c8 0000000000000000\nraw: 0000000000000000 0000000000000000 00000001ffffffff 0000000000000000\npage dumped because: kasan: bad access detected\n\nMemory state around the buggy address:\n ffffffff92c43780: f9 f9 f9 f9 00 00 00 02 f9 f9 f9 f9 00 00 00 07\n ffffffff92c43800: f9 f9 f9 f9 00 00 00 05 f9 f9 f9 f9 06 f9 f9 f9\n\u0026gt;ffffffff92c43880: f9 f9 f9 f9 00 00 00 00 00 00 f9 f9 f9 f9 f9 f9\n                                                 ^\n ffffffff92c43900: 00 00 00 00 00 00 00 00 07 f9 f9 f9 f9 f9 f9 f9\n ffffffff92c43980: 00 00 00 07 f9 f9 f9 f9 00 00 00 05 f9 f9 f9 f9\n\nAccording to the comment of `nla_parse_nested_deprecated`, the maxtype\nshould be len(destination array) - 1. Hence use `IFLA_RMNET_MAX` here."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2024-26597",
+              "help": {
+                "text": "Vulnerability CVE-2024-26597\nSeverity: HIGH\nPackage: linux-libc-dev\nFixed Version: \nLink: [CVE-2024-26597](https://avd.aquasec.com/nvd/cve-2024-26597)\nIn the Linux kernel, the following vulnerability has been resolved:\n\nnet: qualcomm: rmnet: fix global oob in rmnet_policy\n\nThe variable rmnet_link_ops assign a *bigger* maxtype which leads to a\nglobal out-of-bounds read when parsing the netlink attributes. See bug\ntrace below:\n\n==================================================================\nBUG: KASAN: global-out-of-bounds in validate_nla lib/nlattr.c:386 [inline]\nBUG: KASAN: global-out-of-bounds in __nla_validate_parse+0x24af/0x2750 lib/nlattr.c:600\nRead of size 1 at addr ffffffff92c438d0 by task syz-executor.6/84207\n\nCPU: 0 PID: 84207 Comm: syz-executor.6 Tainted: G                 N 6.1.0 #3\nHardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014\nCall Trace:\n \u003cTASK\u003e\n __dump_stack lib/dump_stack.c:88 [inline]\n dump_stack_lvl+0x8b/0xb3 lib/dump_stack.c:106\n print_address_description mm/kasan/report.c:284 [inline]\n print_report+0x172/0x475 mm/kasan/report.c:395\n kasan_report+0xbb/0x1c0 mm/kasan/report.c:495\n validate_nla lib/nlattr.c:386 [inline]\n __nla_validate_parse+0x24af/0x2750 lib/nlattr.c:600\n __nla_parse+0x3e/0x50 lib/nlattr.c:697\n nla_parse_nested_deprecated include/net/netlink.h:1248 [inline]\n __rtnl_newlink+0x50a/0x1880 net/core/rtnetlink.c:3485\n rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3594\n rtnetlink_rcv_msg+0x43c/0xd70 net/core/rtnetlink.c:6091\n netlink_rcv_skb+0x14f/0x410 net/netlink/af_netlink.c:2540\n netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]\n netlink_unicast+0x54e/0x800 net/netlink/af_netlink.c:1345\n netlink_sendmsg+0x930/0xe50 net/netlink/af_netlink.c:1921\n sock_sendmsg_nosec net/socket.c:714 [inline]\n sock_sendmsg+0x154/0x190 net/socket.c:734\n ____sys_sendmsg+0x6df/0x840 net/socket.c:2482\n ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536\n __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565\n do_syscall_x64 arch/x86/entry/common.c:50 [inline]\n do_syscall_64+0x3b/0x90 arch/x86/entry/common.c:80\n entry_SYSCALL_64_after_hwframe+0x63/0xcd\nRIP: 0033:0x7fdcf2072359\nCode: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 \u003c48\u003e 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48\nRSP: 002b:00007fdcf13e3168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e\nRAX: ffffffffffffffda RBX: 00007fdcf219ff80 RCX: 00007fdcf2072359\nRDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003\nRBP: 00007fdcf20bd493 R08: 0000000000000000 R09: 0000000000000000\nR10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000\nR13: 00007fffbb8d7bdf R14: 00007fdcf13e3300 R15: 0000000000022000\n \u003c/TASK\u003e\n\nThe buggy address belongs to the variable:\n rmnet_policy+0x30/0xe0\n\nThe buggy address belongs to the physical page:\npage:0000000065bdeb3c refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x155243\nflags: 0x200000000001000(reserved|node=0|zone=2)\nraw: 0200000000001000 ffffea00055490c8 ffffea00055490c8 0000000000000000\nraw: 0000000000000000 0000000000000000 00000001ffffffff 0000000000000000\npage dumped because: kasan: bad access detected\n\nMemory state around the buggy address:\n ffffffff92c43780: f9 f9 f9 f9 00 00 00 02 f9 f9 f9 f9 00 00 00 07\n ffffffff92c43800: f9 f9 f9 f9 00 00 00 05 f9 f9 f9 f9 06 f9 f9 f9\n\u003effffffff92c43880: f9 f9 f9 f9 00 00 00 00 00 00 f9 f9 f9 f9 f9 f9\n                                                 ^\n ffffffff92c43900: 00 00 00 00 00 00 00 00 07 f9 f9 f9 f9 f9 f9 f9\n ffffffff92c43980: 00 00 00 07 f9 f9 f9 f9 00 00 00 05 f9 f9 f9 f9\n\nAccording to the comment of `nla_parse_nested_deprecated`, the maxtype\nshould be len(destination array) - 1. Hence use `IFLA_RMNET_MAX` here.",
+                "markdown": "**Vulnerability CVE-2024-26597**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|linux-libc-dev||[CVE-2024-26597](https://avd.aquasec.com/nvd/cve-2024-26597)|\n\nIn the Linux kernel, the following vulnerability has been resolved:\n\nnet: qualcomm: rmnet: fix global oob in rmnet_policy\n\nThe variable rmnet_link_ops assign a *bigger* maxtype which leads to a\nglobal out-of-bounds read when parsing the netlink attributes. See bug\ntrace below:\n\n==================================================================\nBUG: KASAN: global-out-of-bounds in validate_nla lib/nlattr.c:386 [inline]\nBUG: KASAN: global-out-of-bounds in __nla_validate_parse+0x24af/0x2750 lib/nlattr.c:600\nRead of size 1 at addr ffffffff92c438d0 by task syz-executor.6/84207\n\nCPU: 0 PID: 84207 Comm: syz-executor.6 Tainted: G                 N 6.1.0 #3\nHardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014\nCall Trace:\n \u003cTASK\u003e\n __dump_stack lib/dump_stack.c:88 [inline]\n dump_stack_lvl+0x8b/0xb3 lib/dump_stack.c:106\n print_address_description mm/kasan/report.c:284 [inline]\n print_report+0x172/0x475 mm/kasan/report.c:395\n kasan_report+0xbb/0x1c0 mm/kasan/report.c:495\n validate_nla lib/nlattr.c:386 [inline]\n __nla_validate_parse+0x24af/0x2750 lib/nlattr.c:600\n __nla_parse+0x3e/0x50 lib/nlattr.c:697\n nla_parse_nested_deprecated include/net/netlink.h:1248 [inline]\n __rtnl_newlink+0x50a/0x1880 net/core/rtnetlink.c:3485\n rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3594\n rtnetlink_rcv_msg+0x43c/0xd70 net/core/rtnetlink.c:6091\n netlink_rcv_skb+0x14f/0x410 net/netlink/af_netlink.c:2540\n netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]\n netlink_unicast+0x54e/0x800 net/netlink/af_netlink.c:1345\n netlink_sendmsg+0x930/0xe50 net/netlink/af_netlink.c:1921\n sock_sendmsg_nosec net/socket.c:714 [inline]\n sock_sendmsg+0x154/0x190 net/socket.c:734\n ____sys_sendmsg+0x6df/0x840 net/socket.c:2482\n ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536\n __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565\n do_syscall_x64 arch/x86/entry/common.c:50 [inline]\n do_syscall_64+0x3b/0x90 arch/x86/entry/common.c:80\n entry_SYSCALL_64_after_hwframe+0x63/0xcd\nRIP: 0033:0x7fdcf2072359\nCode: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 \u003c48\u003e 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48\nRSP: 002b:00007fdcf13e3168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e\nRAX: ffffffffffffffda RBX: 00007fdcf219ff80 RCX: 00007fdcf2072359\nRDX: 0000000000000000 RSI: 0000000020000200 RDI: 0000000000000003\nRBP: 00007fdcf20bd493 R08: 0000000000000000 R09: 0000000000000000\nR10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000\nR13: 00007fffbb8d7bdf R14: 00007fdcf13e3300 R15: 0000000000022000\n \u003c/TASK\u003e\n\nThe buggy address belongs to the variable:\n rmnet_policy+0x30/0xe0\n\nThe buggy address belongs to the physical page:\npage:0000000065bdeb3c refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x155243\nflags: 0x200000000001000(reserved|node=0|zone=2)\nraw: 0200000000001000 ffffea00055490c8 ffffea00055490c8 0000000000000000\nraw: 0000000000000000 0000000000000000 00000001ffffffff 0000000000000000\npage dumped because: kasan: bad access detected\n\nMemory state around the buggy address:\n ffffffff92c43780: f9 f9 f9 f9 00 00 00 02 f9 f9 f9 f9 00 00 00 07\n ffffffff92c43800: f9 f9 f9 f9 00 00 00 05 f9 f9 f9 f9 06 f9 f9 f9\n\u003effffffff92c43880: f9 f9 f9 f9 00 00 00 00 00 00 f9 f9 f9 f9 f9 f9\n                                                 ^\n ffffffff92c43900: 00 00 00 00 00 00 00 00 07 f9 f9 f9 f9 f9 f9 f9\n ffffffff92c43980: 00 00 00 07 f9 f9 f9 f9 00 00 00 05 f9 f9 f9 f9\n\nAccording to the comment of `nla_parse_nested_deprecated`, the maxtype\nshould be len(destination array) - 1. Hence use `IFLA_RMNET_MAX` here."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.0",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-0286",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "openssl: X.400 address type confusion in X.509 GeneralName"
+              },
+              "fullDescription": {
+                "text": "There is a type confusion vulnerability relating to X.400 address processing\ninside an X.509 GeneralName. X.400 addresses were parsed as an ASN1_STRING but\nthe public structure definition for GENERAL_NAME incorrectly specified the type\nof the x400Address field as ASN1_TYPE. This field is subsequently interpreted by\nthe OpenSSL function GENERAL_NAME_cmp as an ASN1_TYPE rather than an\nASN1_STRING.\n\nWhen CRL checking is enabled (i.e. the application sets the\nX509_V_FLAG_CRL_CHECK flag), this vulnerability may allow an attacker to pass\narbitrary pointers to a memcmp call, enabling them to read memory contents or\nenact a denial of service. In most cases, the attack requires the attacker to\nprovide both the certificate chain and CRL, neither of which need to have a\nvalid signature. If the attacker only controls one of these inputs, the other\ninput must already contain an X.400 address as a CRL distribution point, which\nis uncommon. As such, this vulnerability is most likely to only affect\napplications which have implemented their own functionality for retrieving CRLs\nover a network.\n\n"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-0286",
+              "help": {
+                "text": "Vulnerability CVE-2023-0286\nSeverity: HIGH\nPackage: cryptography\nFixed Version: 39.0.1\nLink: [CVE-2023-0286](https://avd.aquasec.com/nvd/cve-2023-0286)\nThere is a type confusion vulnerability relating to X.400 address processing\ninside an X.509 GeneralName. X.400 addresses were parsed as an ASN1_STRING but\nthe public structure definition for GENERAL_NAME incorrectly specified the type\nof the x400Address field as ASN1_TYPE. This field is subsequently interpreted by\nthe OpenSSL function GENERAL_NAME_cmp as an ASN1_TYPE rather than an\nASN1_STRING.\n\nWhen CRL checking is enabled (i.e. the application sets the\nX509_V_FLAG_CRL_CHECK flag), this vulnerability may allow an attacker to pass\narbitrary pointers to a memcmp call, enabling them to read memory contents or\nenact a denial of service. In most cases, the attack requires the attacker to\nprovide both the certificate chain and CRL, neither of which need to have a\nvalid signature. If the attacker only controls one of these inputs, the other\ninput must already contain an X.400 address as a CRL distribution point, which\nis uncommon. As such, this vulnerability is most likely to only affect\napplications which have implemented their own functionality for retrieving CRLs\nover a network.\n\n",
+                "markdown": "**Vulnerability CVE-2023-0286**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|cryptography|39.0.1|[CVE-2023-0286](https://avd.aquasec.com/nvd/cve-2023-0286)|\n\nThere is a type confusion vulnerability relating to X.400 address processing\ninside an X.509 GeneralName. X.400 addresses were parsed as an ASN1_STRING but\nthe public structure definition for GENERAL_NAME incorrectly specified the type\nof the x400Address field as ASN1_TYPE. This field is subsequently interpreted by\nthe OpenSSL function GENERAL_NAME_cmp as an ASN1_TYPE rather than an\nASN1_STRING.\n\nWhen CRL checking is enabled (i.e. the application sets the\nX509_V_FLAG_CRL_CHECK flag), this vulnerability may allow an attacker to pass\narbitrary pointers to a memcmp call, enabling them to read memory contents or\nenact a denial of service. In most cases, the attack requires the attacker to\nprovide both the certificate chain and CRL, neither of which need to have a\nvalid signature. If the attacker only controls one of these inputs, the other\ninput must already contain an X.400 address as a CRL distribution point, which\nis uncommon. As such, this vulnerability is most likely to only affect\napplications which have implemented their own functionality for retrieving CRLs\nover a network.\n\n"
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "7.4",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-50782",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "python-cryptography: Bleichenbacher timing oracle attack against RSA decryption - incomplete fix for CVE-2020-25659"
+              },
+              "fullDescription": {
+                "text": "A flaw was found in the python-cryptography package. This issue may allow a remote attacker to decrypt captured messages in TLS servers that use RSA key exchanges, which may lead to exposure of confidential or sensitive data."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-50782",
+              "help": {
+                "text": "Vulnerability CVE-2023-50782\nSeverity: HIGH\nPackage: cryptography\nFixed Version: 42.0.0\nLink: [CVE-2023-50782](https://avd.aquasec.com/nvd/cve-2023-50782)\nA flaw was found in the python-cryptography package. This issue may allow a remote attacker to decrypt captured messages in TLS servers that use RSA key exchanges, which may lead to exposure of confidential or sensitive data.",
+                "markdown": "**Vulnerability CVE-2023-50782**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|cryptography|42.0.0|[CVE-2023-50782](https://avd.aquasec.com/nvd/cve-2023-50782)|\n\nA flaw was found in the python-cryptography package. This issue may allow a remote attacker to decrypt captured messages in TLS servers that use RSA key exchanges, which may lead to exposure of confidential or sensitive data."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-41419",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "python-gevent: privilege escalation via a crafted script to the WSGIServer component"
+              },
+              "fullDescription": {
+                "text": "An issue in Gevent before version 23.9.0 allows a remote attacker to escalate privileges via a crafted script to the WSGIServer component."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-41419",
+              "help": {
+                "text": "Vulnerability CVE-2023-41419\nSeverity: CRITICAL\nPackage: gevent\nFixed Version: 23.9.0\nLink: [CVE-2023-41419](https://avd.aquasec.com/nvd/cve-2023-41419)\nAn issue in Gevent before version 23.9.0 allows a remote attacker to escalate privileges via a crafted script to the WSGIServer component.",
+                "markdown": "**Vulnerability CVE-2023-41419**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|gevent|23.9.0|[CVE-2023-41419](https://avd.aquasec.com/nvd/cve-2023-41419)|\n\nAn issue in Gevent before version 23.9.0 allows a remote attacker to escalate privileges via a crafted script to the WSGIServer component."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-34540",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Langchain OS Command Injection vulnerability"
+              },
+              "fullDescription": {
+                "text": "An issue discovered in Langchain before 0.0.225 allows attacker to run arbitrary code via jira.run(\u0026#39;other\u0026#39; substring."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-34540",
+              "help": {
+                "text": "Vulnerability CVE-2023-34540\nSeverity: CRITICAL\nPackage: langchain\nFixed Version: 0.0.225\nLink: [CVE-2023-34540](https://avd.aquasec.com/nvd/cve-2023-34540)\nAn issue discovered in Langchain before 0.0.225 allows attacker to run arbitrary code via jira.run('other' substring.",
+                "markdown": "**Vulnerability CVE-2023-34540**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|langchain|0.0.225|[CVE-2023-34540](https://avd.aquasec.com/nvd/cve-2023-34540)|\n\nAn issue discovered in Langchain before 0.0.225 allows attacker to run arbitrary code via jira.run('other' substring."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-34541",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Langchain vulnerable to arbitrary code execution"
+              },
+              "fullDescription": {
+                "text": "Langchain 0.0.171 is vulnerable to Arbitrary code execution in load_prompt."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-34541",
+              "help": {
+                "text": "Vulnerability CVE-2023-34541\nSeverity: CRITICAL\nPackage: langchain\nFixed Version: 0.0.247\nLink: [CVE-2023-34541](https://avd.aquasec.com/nvd/cve-2023-34541)\nLangchain 0.0.171 is vulnerable to Arbitrary code execution in load_prompt.",
+                "markdown": "**Vulnerability CVE-2023-34541**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|langchain|0.0.247|[CVE-2023-34541](https://avd.aquasec.com/nvd/cve-2023-34541)|\n\nLangchain 0.0.171 is vulnerable to Arbitrary code execution in load_prompt."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-36095",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "langchain Code Injection vulnerability"
+              },
+              "fullDescription": {
+                "text": "An issue in Harrison Chase langchain v.0.0.194 allows an attacker to execute arbitrary code via the python exec calls in the PALChain, affected functions include from_math_prompt and from_colored_object_prompt."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-36095",
+              "help": {
+                "text": "Vulnerability CVE-2023-36095\nSeverity: CRITICAL\nPackage: langchain\nFixed Version: 0.0.236\nLink: [CVE-2023-36095](https://avd.aquasec.com/nvd/cve-2023-36095)\nAn issue in Harrison Chase langchain v.0.0.194 allows an attacker to execute arbitrary code via the python exec calls in the PALChain, affected functions include from_math_prompt and from_colored_object_prompt.",
+                "markdown": "**Vulnerability CVE-2023-36095**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|langchain|0.0.236|[CVE-2023-36095](https://avd.aquasec.com/nvd/cve-2023-36095)|\n\nAn issue in Harrison Chase langchain v.0.0.194 allows an attacker to execute arbitrary code via the python exec calls in the PALChain, affected functions include from_math_prompt and from_colored_object_prompt."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-36188",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "langchain vulnerable to arbitrary code execution"
+              },
+              "fullDescription": {
+                "text": "An issue in langchain v.0.0.64 allows a remote attacker to execute arbitrary code via the PALChain parameter in the Python exec method."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-36188",
+              "help": {
+                "text": "Vulnerability CVE-2023-36188\nSeverity: CRITICAL\nPackage: langchain\nFixed Version: 0.0.236\nLink: [CVE-2023-36188](https://avd.aquasec.com/nvd/cve-2023-36188)\nAn issue in langchain v.0.0.64 allows a remote attacker to execute arbitrary code via the PALChain parameter in the Python exec method.",
+                "markdown": "**Vulnerability CVE-2023-36188**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|langchain|0.0.236|[CVE-2023-36188](https://avd.aquasec.com/nvd/cve-2023-36188)|\n\nAn issue in langchain v.0.0.64 allows a remote attacker to execute arbitrary code via the PALChain parameter in the Python exec method."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-36258",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "langchain arbitrary code execution vulnerability"
+              },
+              "fullDescription": {
+                "text": "An issue in LangChain before 0.0.236 allows an attacker to execute arbitrary code because Python code with os.system, exec, or eval can be used."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-36258",
+              "help": {
+                "text": "Vulnerability CVE-2023-36258\nSeverity: CRITICAL\nPackage: langchain\nFixed Version: 0.0.247\nLink: [CVE-2023-36258](https://avd.aquasec.com/nvd/cve-2023-36258)\nAn issue in LangChain before 0.0.236 allows an attacker to execute arbitrary code because Python code with os.system, exec, or eval can be used.",
+                "markdown": "**Vulnerability CVE-2023-36258**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|langchain|0.0.247|[CVE-2023-36258](https://avd.aquasec.com/nvd/cve-2023-36258)|\n\nAn issue in LangChain before 0.0.236 allows an attacker to execute arbitrary code because Python code with os.system, exec, or eval can be used."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-36281",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "langchain vulnerable to arbitrary code execution"
+              },
+              "fullDescription": {
+                "text": "An issue in langchain v.0.0.171 allows a remote attacker to execute arbitrary code via a JSON file to load_prompt. This is related to __subclasses__ or a template."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-36281",
+              "help": {
+                "text": "Vulnerability CVE-2023-36281\nSeverity: CRITICAL\nPackage: langchain\nFixed Version: 0.0.312\nLink: [CVE-2023-36281](https://avd.aquasec.com/nvd/cve-2023-36281)\nAn issue in langchain v.0.0.171 allows a remote attacker to execute arbitrary code via a JSON file to load_prompt. This is related to __subclasses__ or a template.",
+                "markdown": "**Vulnerability CVE-2023-36281**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|langchain|0.0.312|[CVE-2023-36281](https://avd.aquasec.com/nvd/cve-2023-36281)|\n\nAn issue in langchain v.0.0.171 allows a remote attacker to execute arbitrary code via a JSON file to load_prompt. This is related to __subclasses__ or a template."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-38860",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "LangChain vulnerable to arbitrary code execution"
+              },
+              "fullDescription": {
+                "text": "An issue in LangChain v.0.0.231 allows a remote attacker to execute arbitrary code via the prompt parameter."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-38860",
+              "help": {
+                "text": "Vulnerability CVE-2023-38860\nSeverity: CRITICAL\nPackage: langchain\nFixed Version: \nLink: [CVE-2023-38860](https://avd.aquasec.com/nvd/cve-2023-38860)\nAn issue in LangChain v.0.0.231 allows a remote attacker to execute arbitrary code via the prompt parameter.",
+                "markdown": "**Vulnerability CVE-2023-38860**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|langchain||[CVE-2023-38860](https://avd.aquasec.com/nvd/cve-2023-38860)|\n\nAn issue in LangChain v.0.0.231 allows a remote attacker to execute arbitrary code via the prompt parameter."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-38896",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "LangChain vulnerable to arbitrary code execution"
+              },
+              "fullDescription": {
+                "text": "An issue in Harrison Chase langchain v.0.0.194 and before allows a remote attacker to execute arbitrary code via the from_math_prompt and from_colored_object_prompt functions."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-38896",
+              "help": {
+                "text": "Vulnerability CVE-2023-38896\nSeverity: CRITICAL\nPackage: langchain\nFixed Version: 0.0.236\nLink: [CVE-2023-38896](https://avd.aquasec.com/nvd/cve-2023-38896)\nAn issue in Harrison Chase langchain v.0.0.194 and before allows a remote attacker to execute arbitrary code via the from_math_prompt and from_colored_object_prompt functions.",
+                "markdown": "**Vulnerability CVE-2023-38896**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|langchain|0.0.236|[CVE-2023-38896](https://avd.aquasec.com/nvd/cve-2023-38896)|\n\nAn issue in Harrison Chase langchain v.0.0.194 and before allows a remote attacker to execute arbitrary code via the from_math_prompt and from_colored_object_prompt functions."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-39631",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Langchain vulnerable to arbitrary code execution via the evaluate function in the numexpr library"
+              },
+              "fullDescription": {
+                "text": "An issue in LanChain-ai Langchain v.0.0.245 allows a remote attacker to execute arbitrary code via the evaluate function in the numexpr library."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-39631",
+              "help": {
+                "text": "Vulnerability CVE-2023-39631\nSeverity: CRITICAL\nPackage: langchain\nFixed Version: 0.0.308\nLink: [CVE-2023-39631](https://avd.aquasec.com/nvd/cve-2023-39631)\nAn issue in LanChain-ai Langchain v.0.0.245 allows a remote attacker to execute arbitrary code via the evaluate function in the numexpr library.",
+                "markdown": "**Vulnerability CVE-2023-39631**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|langchain|0.0.308|[CVE-2023-39631](https://avd.aquasec.com/nvd/cve-2023-39631)|\n\nAn issue in LanChain-ai Langchain v.0.0.245 allows a remote attacker to execute arbitrary code via the evaluate function in the numexpr library."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-39659",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "LangChain vulnerable to arbitrary code execution"
+              },
+              "fullDescription": {
+                "text": "An issue in langchain langchain-ai v.0.0.232 and before allows a remote attacker to execute arbitrary code via a crafted script to the PythonAstREPLTool._run component."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-39659",
+              "help": {
+                "text": "Vulnerability CVE-2023-39659\nSeverity: CRITICAL\nPackage: langchain\nFixed Version: 0.0.325\nLink: [CVE-2023-39659](https://avd.aquasec.com/nvd/cve-2023-39659)\nAn issue in langchain langchain-ai v.0.0.232 and before allows a remote attacker to execute arbitrary code via a crafted script to the PythonAstREPLTool._run component.",
+                "markdown": "**Vulnerability CVE-2023-39659**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|langchain|0.0.325|[CVE-2023-39659](https://avd.aquasec.com/nvd/cve-2023-39659)|\n\nAn issue in langchain langchain-ai v.0.0.232 and before allows a remote attacker to execute arbitrary code via a crafted script to the PythonAstREPLTool._run component."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-32786",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "Langchain Server-Side Request Forgery vulnerability"
+              },
+              "fullDescription": {
+                "text": "In Langchain through 0.0.155, prompt injection allows an attacker to force the service to retrieve data from an arbitrary URL, essentially providing SSRF and potentially injecting content into downstream tasks."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-32786",
+              "help": {
+                "text": "Vulnerability CVE-2023-32786\nSeverity: HIGH\nPackage: langchain\nFixed Version: 0.0.329\nLink: [CVE-2023-32786](https://avd.aquasec.com/nvd/cve-2023-32786)\nIn Langchain through 0.0.155, prompt injection allows an attacker to force the service to retrieve data from an arbitrary URL, essentially providing SSRF and potentially injecting content into downstream tasks.",
+                "markdown": "**Vulnerability CVE-2023-32786**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|langchain|0.0.329|[CVE-2023-32786](https://avd.aquasec.com/nvd/cve-2023-32786)|\n\nIn Langchain through 0.0.155, prompt injection allows an attacker to force the service to retrieve data from an arbitrary URL, essentially providing SSRF and potentially injecting content into downstream tasks."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-36189",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "langchain SQL Injection vulnerability"
+              },
+              "fullDescription": {
+                "text": "SQL injection vulnerability in langchain before v0.0.247 allows a remote attacker to obtain sensitive information via the SQLDatabaseChain component."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-36189",
+              "help": {
+                "text": "Vulnerability CVE-2023-36189\nSeverity: HIGH\nPackage: langchain\nFixed Version: \nLink: [CVE-2023-36189](https://avd.aquasec.com/nvd/cve-2023-36189)\nSQL injection vulnerability in langchain before v0.0.247 allows a remote attacker to obtain sensitive information via the SQLDatabaseChain component.",
+                "markdown": "**Vulnerability CVE-2023-36189**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|langchain||[CVE-2023-36189](https://avd.aquasec.com/nvd/cve-2023-36189)|\n\nSQL injection vulnerability in langchain before v0.0.247 allows a remote attacker to obtain sensitive information via the SQLDatabaseChain component."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2023-46229",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "LangChain Server Side Request Forgery vulnerability"
+              },
+              "fullDescription": {
+                "text": "LangChain before 0.0.317 allows SSRF via document_loaders/recursive_url_loader.py because crawling can proceed from an external server to an internal server."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2023-46229",
+              "help": {
+                "text": "Vulnerability CVE-2023-46229\nSeverity: HIGH\nPackage: langchain\nFixed Version: 0.0.317\nLink: [CVE-2023-46229](https://avd.aquasec.com/nvd/cve-2023-46229)\nLangChain before 0.0.317 allows SSRF via document_loaders/recursive_url_loader.py because crawling can proceed from an external server to an internal server.",
+                "markdown": "**Vulnerability CVE-2023-46229**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|langchain|0.0.317|[CVE-2023-46229](https://avd.aquasec.com/nvd/cve-2023-46229)|\n\nLangChain before 0.0.317 allows SSRF via document_loaders/recursive_url_loader.py because crawling can proceed from an external server to an internal server."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2018-7750",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "python-paramiko: Authentication bypass in transport.py"
+              },
+              "fullDescription": {
+                "text": "transport.py in the SSH server implementation of Paramiko before 1.17.6, 1.18.x before 1.18.5, 2.0.x before 2.0.8, 2.1.x before 2.1.5, 2.2.x before 2.2.3, 2.3.x before 2.3.2, and 2.4.x before 2.4.1 does not properly check whether authentication is completed before processing other requests, as demonstrated by channel-open. A customized SSH client can simply skip the authentication step."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2018-7750",
+              "help": {
+                "text": "Vulnerability CVE-2018-7750\nSeverity: CRITICAL\nPackage: paramiko\nFixed Version: 2.0.8, 2.1.5, 2.2.3, 2.3.2, 2.4.1, 1.18.5, 1.17.6\nLink: [CVE-2018-7750](https://avd.aquasec.com/nvd/cve-2018-7750)\ntransport.py in the SSH server implementation of Paramiko before 1.17.6, 1.18.x before 1.18.5, 2.0.x before 2.0.8, 2.1.x before 2.1.5, 2.2.x before 2.2.3, 2.3.x before 2.3.2, and 2.4.x before 2.4.1 does not properly check whether authentication is completed before processing other requests, as demonstrated by channel-open. A customized SSH client can simply skip the authentication step.",
+                "markdown": "**Vulnerability CVE-2018-7750**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|paramiko|2.0.8, 2.1.5, 2.2.3, 2.3.2, 2.4.1, 1.18.5, 1.17.6|[CVE-2018-7750](https://avd.aquasec.com/nvd/cve-2018-7750)|\n\ntransport.py in the SSH server implementation of Paramiko before 1.17.6, 1.18.x before 1.18.5, 2.0.x before 2.0.8, 2.1.x before 2.1.5, 2.2.x before 2.2.3, 2.3.x before 2.3.2, and 2.4.x before 2.4.1 does not properly check whether authentication is completed before processing other requests, as demonstrated by channel-open. A customized SSH client can simply skip the authentication step."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2018-1000805",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "python-paramiko: Authentication bypass in auth_handler.py"
+              },
+              "fullDescription": {
+                "text": "Paramiko version 2.4.1, 2.3.2, 2.2.3, 2.1.5, 2.0.8, 1.18.5, 1.17.6 contains a Incorrect Access Control vulnerability in SSH server that can result in RCE. This attack appear to be exploitable via network connectivity."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2018-1000805",
+              "help": {
+                "text": "Vulnerability CVE-2018-1000805\nSeverity: HIGH\nPackage: paramiko\nFixed Version: 2.4.2, 2.3.3, 2.2.4, 2.1.6, 2.0.9\nLink: [CVE-2018-1000805](https://avd.aquasec.com/nvd/cve-2018-1000805)\nParamiko version 2.4.1, 2.3.2, 2.2.3, 2.1.5, 2.0.8, 1.18.5, 1.17.6 contains a Incorrect Access Control vulnerability in SSH server that can result in RCE. This attack appear to be exploitable via network connectivity.",
+                "markdown": "**Vulnerability CVE-2018-1000805**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|paramiko|2.4.2, 2.3.3, 2.2.4, 2.1.6, 2.0.9|[CVE-2018-1000805](https://avd.aquasec.com/nvd/cve-2018-1000805)|\n\nParamiko version 2.4.1, 2.3.2, 2.2.3, 2.1.5, 2.0.8, 1.18.5, 1.17.6 contains a Incorrect Access Control vulnerability in SSH server that can result in RCE. This attack appear to be exploitable via network connectivity."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "8.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2013-7459",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "pycrypto: Heap-buffer overflow in ALGobject structure"
+              },
+              "fullDescription": {
+                "text": "Heap-based buffer overflow in the ALGnew function in block_templace.c in Python Cryptography Toolkit (aka pycrypto) allows remote attackers to execute arbitrary code as demonstrated by a crafted iv parameter to cryptmsg.py."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2013-7459",
+              "help": {
+                "text": "Vulnerability CVE-2013-7459\nSeverity: CRITICAL\nPackage: pycrypto\nFixed Version: \nLink: [CVE-2013-7459](https://avd.aquasec.com/nvd/cve-2013-7459)\nHeap-based buffer overflow in the ALGnew function in block_templace.c in Python Cryptography Toolkit (aka pycrypto) allows remote attackers to execute arbitrary code as demonstrated by a crafted iv parameter to cryptmsg.py.",
+                "markdown": "**Vulnerability CVE-2013-7459**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|CRITICAL|pycrypto||[CVE-2013-7459](https://avd.aquasec.com/nvd/cve-2013-7459)|\n\nHeap-based buffer overflow in the ALGnew function in block_templace.c in Python Cryptography Toolkit (aka pycrypto) allows remote attackers to execute arbitrary code as demonstrated by a crafted iv parameter to cryptmsg.py."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "9.8",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "CRITICAL"
+                ]
+              }
+            },
+            {
+              "id": "CVE-2018-6594",
+              "name": "LanguageSpecificPackageVulnerability",
+              "shortDescription": {
+                "text": "python-crypto: Weak ElGamal key parameters in PublicKey/ElGamal.py allow attackers to obtain sensitive information by reading ciphertext"
+              },
+              "fullDescription": {
+                "text": "lib/Crypto/PublicKey/ElGamal.py in PyCrypto through 2.6.1 generates weak ElGamal key parameters, which allows attackers to obtain sensitive information by reading ciphertext data (i.e., it does not have semantic security in face of a ciphertext-only attack). The Decisional Diffie-Hellman (DDH) assumption does not hold for PyCrypto\u0026#39;s ElGamal implementation."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2018-6594",
+              "help": {
+                "text": "Vulnerability CVE-2018-6594\nSeverity: HIGH\nPackage: pycrypto\nFixed Version: \nLink: [CVE-2018-6594](https://avd.aquasec.com/nvd/cve-2018-6594)\nlib/Crypto/PublicKey/ElGamal.py in PyCrypto through 2.6.1 generates weak ElGamal key parameters, which allows attackers to obtain sensitive information by reading ciphertext data (i.e., it does not have semantic security in face of a ciphertext-only attack). The Decisional Diffie-Hellman (DDH) assumption does not hold for PyCrypto's ElGamal implementation.",
+                "markdown": "**Vulnerability CVE-2018-6594**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|pycrypto||[CVE-2018-6594](https://avd.aquasec.com/nvd/cve-2018-6594)|\n\nlib/Crypto/PublicKey/ElGamal.py in PyCrypto through 2.6.1 generates weak ElGamal key parameters, which allows attackers to obtain sensitive information by reading ciphertext data (i.e., it does not have semantic security in face of a ciphertext-only attack). The Decisional Diffie-Hellman (DDH) assumption does not hold for PyCrypto's ElGamal implementation."
+              },
+              "properties": {
+                "precision": "very-high",
+                "security-severity": "7.5",
+                "tags": [
+                  "vulnerability",
+                  "security",
+                  "HIGH"
+                ]
+              }
+            }
+          ],
+          "version": "0.49.1"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CVE-2024-26597",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Package: linux-libc-dev\nInstalled Version: 5.15.0-97.107\nVulnerability CVE-2024-26597\nSeverity: HIGH\nFixed Version: \nLink: [CVE-2024-26597](https://avd.aquasec.com/nvd/cve-2024-26597)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "library/test_tag",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "library/test_tag: linux-libc-dev@5.15.0-97.107"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-0286",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "Package: cryptography\nInstalled Version: 37.0.4\nVulnerability CVE-2023-0286\nSeverity: HIGH\nFixed Version: 39.0.1\nLink: [CVE-2023-0286](https://avd.aquasec.com/nvd/cve-2023-0286)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/cryptography-37.0.4.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/cryptography-37.0.4.dist-info/METADATA: cryptography@37.0.4"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-50782",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "Package: cryptography\nInstalled Version: 37.0.4\nVulnerability CVE-2023-50782\nSeverity: HIGH\nFixed Version: 42.0.0\nLink: [CVE-2023-50782](https://avd.aquasec.com/nvd/cve-2023-50782)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/cryptography-37.0.4.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/cryptography-37.0.4.dist-info/METADATA: cryptography@37.0.4"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-41419",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "Package: gevent\nInstalled Version: 23.7.0\nVulnerability CVE-2023-41419\nSeverity: CRITICAL\nFixed Version: 23.9.0\nLink: [CVE-2023-41419](https://avd.aquasec.com/nvd/cve-2023-41419)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/gevent-23.7.0.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/gevent-23.7.0.dist-info/METADATA: gevent@23.7.0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-34540",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-34540\nSeverity: CRITICAL\nFixed Version: 0.0.225\nLink: [CVE-2023-34540](https://avd.aquasec.com/nvd/cve-2023-34540)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-34541",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-34541\nSeverity: CRITICAL\nFixed Version: 0.0.247\nLink: [CVE-2023-34541](https://avd.aquasec.com/nvd/cve-2023-34541)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-36095",
+          "ruleIndex": 6,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-36095\nSeverity: CRITICAL\nFixed Version: 0.0.236\nLink: [CVE-2023-36095](https://avd.aquasec.com/nvd/cve-2023-36095)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-36188",
+          "ruleIndex": 7,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-36188\nSeverity: CRITICAL\nFixed Version: 0.0.236\nLink: [CVE-2023-36188](https://avd.aquasec.com/nvd/cve-2023-36188)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-36258",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-36258\nSeverity: CRITICAL\nFixed Version: 0.0.247\nLink: [CVE-2023-36258](https://avd.aquasec.com/nvd/cve-2023-36258)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-36281",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-36281\nSeverity: CRITICAL\nFixed Version: 0.0.312\nLink: [CVE-2023-36281](https://avd.aquasec.com/nvd/cve-2023-36281)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-38860",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-38860\nSeverity: CRITICAL\nFixed Version: \nLink: [CVE-2023-38860](https://avd.aquasec.com/nvd/cve-2023-38860)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-38896",
+          "ruleIndex": 11,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-38896\nSeverity: CRITICAL\nFixed Version: 0.0.236\nLink: [CVE-2023-38896](https://avd.aquasec.com/nvd/cve-2023-38896)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-39631",
+          "ruleIndex": 12,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-39631\nSeverity: CRITICAL\nFixed Version: 0.0.308\nLink: [CVE-2023-39631](https://avd.aquasec.com/nvd/cve-2023-39631)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-39659",
+          "ruleIndex": 13,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-39659\nSeverity: CRITICAL\nFixed Version: 0.0.325\nLink: [CVE-2023-39659](https://avd.aquasec.com/nvd/cve-2023-39659)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-32786",
+          "ruleIndex": 14,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-32786\nSeverity: HIGH\nFixed Version: 0.0.329\nLink: [CVE-2023-32786](https://avd.aquasec.com/nvd/cve-2023-32786)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-36189",
+          "ruleIndex": 15,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-36189\nSeverity: HIGH\nFixed Version: \nLink: [CVE-2023-36189](https://avd.aquasec.com/nvd/cve-2023-36189)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2023-46229",
+          "ruleIndex": 16,
+          "level": "error",
+          "message": {
+            "text": "Package: langchain\nInstalled Version: 0.0.171\nVulnerability CVE-2023-46229\nSeverity: HIGH\nFixed Version: 0.0.317\nLink: [CVE-2023-46229](https://avd.aquasec.com/nvd/cve-2023-46229)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/langchain-0.0.171.dist-info/METADATA: langchain@0.0.171"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2018-7750",
+          "ruleIndex": 17,
+          "level": "error",
+          "message": {
+            "text": "Package: paramiko\nInstalled Version: 2.0.0\nVulnerability CVE-2018-7750\nSeverity: CRITICAL\nFixed Version: 2.0.8, 2.1.5, 2.2.3, 2.3.2, 2.4.1, 1.18.5, 1.17.6\nLink: [CVE-2018-7750](https://avd.aquasec.com/nvd/cve-2018-7750)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/paramiko-2.0.0.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/paramiko-2.0.0.dist-info/METADATA: paramiko@2.0.0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2018-1000805",
+          "ruleIndex": 18,
+          "level": "error",
+          "message": {
+            "text": "Package: paramiko\nInstalled Version: 2.0.0\nVulnerability CVE-2018-1000805\nSeverity: HIGH\nFixed Version: 2.4.2, 2.3.3, 2.2.4, 2.1.6, 2.0.9\nLink: [CVE-2018-1000805](https://avd.aquasec.com/nvd/cve-2018-1000805)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/paramiko-2.0.0.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/paramiko-2.0.0.dist-info/METADATA: paramiko@2.0.0"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2013-7459",
+          "ruleIndex": 19,
+          "level": "error",
+          "message": {
+            "text": "Package: pycrypto\nInstalled Version: 2.6.1\nVulnerability CVE-2013-7459\nSeverity: CRITICAL\nFixed Version: \nLink: [CVE-2013-7459](https://avd.aquasec.com/nvd/cve-2013-7459)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/pycrypto-2.6.1.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/pycrypto-2.6.1.dist-info/METADATA: pycrypto@2.6.1"
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CVE-2018-6594",
+          "ruleIndex": 20,
+          "level": "error",
+          "message": {
+            "text": "Package: pycrypto\nInstalled Version: 2.6.1\nVulnerability CVE-2018-6594\nSeverity: HIGH\nFixed Version: \nLink: [CVE-2018-6594](https://avd.aquasec.com/nvd/cve-2018-6594)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/pycrypto-2.6.1.dist-info/METADATA",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
+                }
+              },
+              "message": {
+                "text": "root/.cache/pypoetry/virtualenvs/ghast-VsnhxLU2-py3.10/lib/python3.10/site-packages/pycrypto-2.6.1.dist-info/METADATA: pycrypto@2.6.1"
+              }
+            }
+          ]
+        }
+      ],
+      "columnKind": "utf16CodeUnits",
+      "originalUriBaseIds": {
+        "ROOTPATH": {
+          "uri": "file:///"
+        }
+      },
+      "properties": {
+        "imageName": "test_tag",
+        "repoDigests": [],
+        "repoTags": [
+          "test_tag:latest"
+        ]
+      }
+    }
+  ]
+}
