@@ -16,11 +16,11 @@ def find_package_line(package_name, pyproject_content):
     return None
 
 # Load the SARIF report
-with open('../trivy-results.sarif', 'r') as f:
+with open('trivy-results.sarif', 'r') as f:
     sarif_report = json.load(f)
 
 # Load the pyproject.toml file
-with open('../pyproject.toml', 'r') as f:
+with open('pyproject.toml', 'r') as f:
     pyproject_content = f.read()
 
 # Go through each result in the SARIF report
