@@ -38,10 +38,13 @@ jobs:
         uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
         with:
           image-ref: 'docker.io/austimkelly/trivy-test-ghas:${{ github.sha }}'
-          format: 'template'
+          format: 'sarif'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
+          vuln-type: "os,library"
+          limit-severities-for-sarif: true
+          
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -61,3 +64,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'updated_report.sarif'
+          category: "trivy-scan-line-adjustment"
