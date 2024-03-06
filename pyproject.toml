@@ -1,0 +1,34 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "ghast"
+version = "0.1.0"
+description = "GHAS Testing"
+readme = "README.md"
+authors = ["Developer Platform Team"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+cowsay = "~=6.1"
+
+# The following are python libraries with security vulnerabilities in them
+# for testing testing SAST tools like GHAS, Dependabot, Trivy, Snyk, bandit, etc
+# - alerts on unverified requests e.g., `requests.get(url, verify=False)`
+requests = "~=2.31"
+# - pycrypto is abandonware and very insecure
+pycrypto = "=2.6.1"
+# - cryptography<38 has 4 known _fixable_ high severity vulns, here's 1/4:
+# - https://security.snyk.io/vuln/SNYK-PYTHON-CRYPTOGRAPHY-3112177
+cryptography = "<38"
+# - flask-caching==1.11.1 has 1 PoC (unfixable) high severity vuln:
+# - https://security.snyk.io/vuln/SNYK-PYTHON-FLASKCACHING-1292339
+flask-caching = "==1.11.1"
+# from GHSA database
+gevent = "23.7"
+paramiko = "2.0.0"
+langchain = "0.0.171"
+
+[tool.poetry.scripts]
+ghast = "ghast:cli"
