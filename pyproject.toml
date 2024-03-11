@@ -28,4 +28,4 @@ flask-caching = "==1.11.1"
 # from GHSA database
 gevent = "23.7"
 paramiko = "2.0.0"
-langchain = "0.0.170"
+langchain = "0.1.11"
