@@ -59,6 +59,5 @@ jobs:
           deny-packages: "pkg:pypi/pycrypto"
           # Deny all copy-left licenses
           deny-licenses: "GPL-1.0, GPL-2.0, GPL-3.0, AGPL-1.0, AGPL-3.0, LGPL-2.1, LGPL-3.0, MPL-2.0, CDDL-1.0, EPL-1.0"
-          # Allow list of packages that may have failed a license check but are explicitly OK.
-          allow-packages: "pkg:pypi/erpnext, pkg:pypi/flask-oidc-ex"
+          
           
