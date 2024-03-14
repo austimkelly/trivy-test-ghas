@@ -22,7 +22,7 @@ requests = "~=2.31"
 pycrypto = "=2.6.0"
 # - cryptography<38 has 4 known _fixable_ high severity vulns, here's 1/4:
 # - https://security.snyk.io/vuln/SNYK-PYTHON-CRYPTOGRAPHY-3112177
-cryptography = "<38"
+cryptography = "<43"
 # - flask-caching==1.11.1 has 1 PoC (unfixable) high severity vuln:
 # - https://security.snyk.io/vuln/SNYK-PYTHON-FLASKCACHING-1292339
 flask-caching = "==1.11.1"
