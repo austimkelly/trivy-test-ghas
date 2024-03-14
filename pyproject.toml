@@ -14,29 +14,29 @@ python = ">=3.10,<3.13"
 
 # #### AGPL ####
 # https://github.com/tesla-ce/python-client/blob/main/LICENSE
-tesla-ce-client = "^0.1.0"
+#tesla-ce-client = "^0.1.0"
 # https://github.com/yuvallanger/meditate/blob/master/LICENSE.txt
-meditate = "^0.0.4"
+#meditate = "^0.0.4"
 
 # ####### GPL 3.0 ########
 # GPL 3.0: https://github.com/VaasuDevanS/cowsay-python/blob/main/LICENSE
-#cowsay = "~=6.1"
+cowsay = "~=6.1"
  # https://github.com/frappe/erpnext/blob/develop/license.txt
-erpnext = "^12.14.0"
+#erpnext = "^12.14.0"
 # https://github.com/ultralytics/ultralytics/blob/main/LICENSE
-ultralytics = "^8.1.27"
+#ultralytics = "^8.1.27"
 
 # No specific license https://github.com/dpgaspar/Flask-AppBuilder/blob/master/LICENSE
-flask-appbuilder = "^3.3.2"
+#flask-appbuilder = "^3.3.2"
 # No specific license specified: https://github.com/python-babel/flask-babel/blob/master/LICENSE
-flask-babelex = "^0.9.4"
+#flask-babelex = "^0.9.4"
 
 # ##### BSD 3 ######
 # BSD 3 license: https://github.com/lepture/authlib/blob/master/LICENSE
-authlib = "^0.15.3"
+#authlib = "^0.15.3"
 # #### No specific license found ########
 # BSD 3  https://github.com/blaze/odo/blob/master/LICENSE.txt
-odoo = "^14.0" 
+#odoo = "^14.0" 
 
 # ##### BSD 2 #####
 # https://github.com/larsw/flask-oidc-ex/blob/master/LICENSE.txt
