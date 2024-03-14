@@ -25,7 +25,7 @@ pycrypto = "=2.6.0"
 cryptography = "<38"
 # - flask-caching==1.11.1 has 1 PoC (unfixable) high severity vuln:
 # - https://security.snyk.io/vuln/SNYK-PYTHON-FLASKCACHING-1292339
-flask-caching = "==1.11.1"
+flask-caching = "==2.1.0"
 # from GHSA database
 gevent = "23.7"
 paramiko = "2.0.0"
