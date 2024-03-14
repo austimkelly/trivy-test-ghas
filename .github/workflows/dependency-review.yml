@@ -49,5 +49,6 @@ jobs:
           # Allow list of packages that may have failed a license check but are explicitly OK. NOTE: Not supported for use with GitHub Enterprise Server
           allow-dependencies-licenses: "pkg:pypi/erpnext, pkg:pypi/flask-oidc-ex"
           # When set to true, the action will output information about all the known OpenSSF Scorecard scores for the dependencies changed in this pull request.
-          show-openssf-scorecard-levels: true
+          # BUG: This option give this warning causing the rest of the checks to not work properly (no errors) Unexpected input(s) 'show-openssf-scorecard-levels', valid inputs are ['repo-token', 'fail-on-severity', 'fail-on-scopes', 'base-ref', 'head-ref', 'config-file', 'allow-licenses', 'deny-licenses', 'allow-dependencies-licenses', 'allow-ghsas', 'external-repo-token', 'license-check', 'vulnerability-check', 'comment-summary-in-pr', 'deny-packages', 'deny-groups', 'retry-on-snapshot-warnings', 'retry-on-snapshot-warnings-timeout', 'warn-only']
+          # show-openssf-scorecard-levels: true
           
