@@ -1,0 +1,34 @@
+name: Dependency Review
+
+# trigger on main branch but only if specific files or paths have changes
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      # only check if a manifest file has changed
+      - "Dockerfile"
+      - "pyproject.toml"
+      - "poetry.lock"
+      - ".github/**"
+
+# ensures only one run of the workflow happens per branch or per run (if not associated with a branch)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v3
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: "on-failure"
+          deny-packages: "pkg:pypi/pycrypto"
+          deny-licenses: "AGPL-3.0"
