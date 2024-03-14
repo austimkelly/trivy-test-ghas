@@ -31,9 +31,9 @@ jobs:
       - uses: actions/dependency-review-action@v3
         with:
           # default for license-check is true
-          ## license-check: true
+          license-check: true
           # default for vulnerabity-check is true
-          ## vulnerability-check: true
+          vulnerability-check: true
           # this will fail if the security advisory databse has a minimum level of "fail-on-severity" value or higher.
           fail-on-severity: low
           comment-summary-in-pr: "on-failure"
