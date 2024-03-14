@@ -31,9 +31,9 @@ jobs:
       - uses: actions/dependency-review-action@v3
         with:
           # default for license-check is true
-          license-check: true
+          ## license-check: true
           # default for vulnerabity-check is true
-          vulnerability-check: true
+          ## vulnerability-check: true
           # this will fail if the security advisory databse has a minimum level of "fail-on-severity" value or higher.
           fail-on-severity: low
           comment-summary-in-pr: "on-failure"
@@ -45,7 +45,7 @@ jobs:
           # BUG: There is no way to fail on an unknown license
           deny-licenses: "GPL-1.0, GPL-2.0, GPL-3.0, AGPL-1.0, AGPL-3.0, LGPL-2.1, LGPL-3.0, MPL-2.0, CDDL-1.0, EPL-1.0"
           # License types to explicitly allow. NOTE: Not supported for use with GitHub Enterprise Server
-          allow-licenses: ""
+          ## allow-licenses: ""
           # Allow list of packages that may have failed a license check but are explicitly OK. NOTE: Not supported for use with GitHub Enterprise Server
           allow-dependencies-licenses: "pkg:pypi/erpnext, pkg:pypi/flask-oidc-ex"
           # When set to true, the action will output information about all the known OpenSSF Scorecard scores for the dependencies changed in this pull request.
