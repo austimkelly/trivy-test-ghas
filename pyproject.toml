@@ -23,6 +23,8 @@ meditate = "^0.0.4"
 cowsay = "~=6.1"
  # https://github.com/frappe/erpnext/blob/develop/license.txt
 erpnext = "^12.14.0"
+# https://github.com/ultralytics/ultralytics/blob/main/LICENSE
+ultralytics = "^8.1.27"
 
 # No specific license https://github.com/dpgaspar/Flask-AppBuilder/blob/master/LICENSE
 flask-appbuilder = "^3.3.2"
