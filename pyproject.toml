@@ -59,7 +59,7 @@ invenio-config = "^1.0.3"
 # - alerts on unverified requests e.g., `requests.get(url, verify=False)`
 requests = "~=2.31"
 # - pycrypto is abandonware and very insecure
-pycrypto = "=2.6.0"
+pycrypto = "=2.6.1"
 # - cryptography<38 has 4 known _fixable_ high severity vulns, here's 1/4:
 # - https://security.snyk.io/vuln/SNYK-PYTHON-CRYPTOGRAPHY-3112177
 cryptography = "<38"
