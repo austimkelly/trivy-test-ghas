@@ -3,7 +3,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "ghast"
+name = "ghas-testing"
 version = "0.1.0"
 description = "GHAS Testing"
 readme = "README.md"
@@ -43,6 +43,3 @@ flask-caching = "==1.11.1"
 gevent = "23.7"
 paramiko = "2.0.0"
 langchain = "0.0.170"
-
-[tool.poetry.scripts]
-ghast = "ghast:cli"
