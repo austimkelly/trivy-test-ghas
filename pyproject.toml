@@ -20,7 +20,7 @@ meditate = "^0.0.4"
 
 # ####### GPL 3.0 ########
 # GPL 3.0: https://github.com/VaasuDevanS/cowsay-python/blob/main/LICENSE
-cowsay = "~=6.1"
+#cowsay = "~=6.1"
  # https://github.com/frappe/erpnext/blob/develop/license.txt
 erpnext = "^12.14.0"
 # https://github.com/ultralytics/ultralytics/blob/main/LICENSE
